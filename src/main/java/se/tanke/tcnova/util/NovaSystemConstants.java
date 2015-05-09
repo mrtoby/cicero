@@ -1,4 +1,4 @@
-package se.tanke.novatool.util;
+package se.tanke.tcnova.util;
 
 /**
  * Constants for the nova system.
@@ -14,14 +14,8 @@ public final class NovaSystemConstants {
     /** Number of variations 7 x 4. */
     public static final int NUMBER_OF_VARIATIONS = 28;
 
-    /** The first byte in the manufacturer id. */
-    public static final int MANUFACTURER_ID_BYTE1 = 0x00;
-
-    /** The second byte in the manufacturer id. */
-    public static final int MANUFACTURER_ID_BYTE2 = 0x20;
-
-    /** The third (and last) byte in the manufacturer id. */
-    public static final int MANUFACTURER_ID_BYTE3 = 0x1f;
+    /** The bytes representing the manufacturer TC Electronics. */
+    public static final int[] MANUFACTURER_ID_BYTES = { 0x00, 0x20, 0x1f };
 
     /** The model id for the Nova System. */
     public static final int MODEL_ID_BYTE = 0x63;
