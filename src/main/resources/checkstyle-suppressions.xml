@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+"-//Puppy Crawl//DTD Suppressions 1.1//EN"
+"http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
+
+<suppressions>
+    <!-- No javadoc required for tests. -->
+    <!--  <suppress files="[/\\]src[/\\]test[/\\]java[/\\].*\.java" checks="Javadoc.*"/> -->
+
+    <!-- No checkstyle required for tests. -->
+    <suppress files="[/\\]src[/\\]test[/\\]java[/\\].*\.java" checks="."/>
+    
+    <!-- No checkstyle for kinesis client library (currently in smart-garden-data-collection). -->
+    <suppress files="com[/\\]amazonaws[/\\]services[/\\]kinesis" checks="."/>
+</suppressions>
