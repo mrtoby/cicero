@@ -1,9 +1,9 @@
-package se.tanke.tcnova;
+package se.tanke.cicero;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import se.tanke.tcnova.DeviceConfiguration;
+import se.tanke.cicero.DeviceConfiguration;
 
 public class DeviceConfigurationTest {
 

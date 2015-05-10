@@ -1,8 +1,11 @@
-package se.tanke.tcnova.midi;
+package se.tanke.cicero.midi;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+
+import se.tanke.cicero.midi.MidiConstants;
+import se.tanke.cicero.midi.MidiMessage;
 
 public class MidiMessageBuilderTest {
 
@@ -25,7 +28,7 @@ public class MidiMessageBuilderTest {
 	public void append14BitNumber_works_with_max_value() {
 		final MidiMessage result = MidiMessage.newBuilder()
 				.append(MidiConstants.SYSTEM_EXCLUSIVE)
-				.append14BitNumber(0x3fff)
+				.append14BitNumberBE(0x3fff)
 				.append(MidiConstants.SYSTEM_EXCLUSIVE_END)
 				.build();
 		
@@ -40,7 +43,7 @@ public class MidiMessageBuilderTest {
 	public void append14BitNumber_works_with_zero_value() {
 		final MidiMessage result = MidiMessage.newBuilder()
 				.append(MidiConstants.SYSTEM_EXCLUSIVE)
-				.append14BitNumber(0x0000)
+				.append14BitNumberBE(0x0000)
 				.append(MidiConstants.SYSTEM_EXCLUSIVE_END)
 				.build();
 		
@@ -55,7 +58,7 @@ public class MidiMessageBuilderTest {
 	public void append14BitNumber_works_with_some_value() {
 		final MidiMessage result = MidiMessage.newBuilder()
 				.append(MidiConstants.SYSTEM_EXCLUSIVE)
-				.append14BitNumber(0x1234)
+				.append14BitNumberBE(0x1234)
 				.append(MidiConstants.SYSTEM_EXCLUSIVE_END)
 				.build();
 		

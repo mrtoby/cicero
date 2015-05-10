@@ -1,4 +1,4 @@
-package se.tanke.tcnova.midi;
+package se.tanke.cicero.midi;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,19 +17,6 @@ import java.util.List;
  * with a system exclusive end byte.
  */
 public final class SysexFile {
-	
-	/**
-	 * Method that can be used to test the file methods.
-	 * @param args Two filenames, the first is read from and the second is written to
-	 * @throws IOException If something goes wrong
-	 */
-	public static void main(final String[] args) throws IOException {
-		if (args.length != 2) {
-			throw new RuntimeException("Expect two filenames as arguments, the first is read from and the second written to");
-		}
-		List<MidiMessage> result = SysexFile.read(new File(args[0]));
-		SysexFile.write(new File(args[1]), result);
-	}
 	
 	/**
 	 * Read sysex midi messages from a file.

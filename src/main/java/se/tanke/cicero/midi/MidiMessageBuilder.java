@@ -1,4 +1,4 @@
-package se.tanke.tcnova.midi;
+package se.tanke.cicero.midi;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -55,17 +55,32 @@ public class MidiMessageBuilder {
 	}
 
 	/**
-	 * Append a 14-bit number as two 7-bit numbers. The
+	 * Append a 14-bit number as two 7-bit numbers in big endian byte order. The
 	 * most-significant-byte is appended before the least-significant-byte.
 	 * @param number A 14-bit number
 	 * @return Builder for chaining
 	 */
-	public MidiMessageBuilder append14BitNumber(final int number) {
+	public MidiMessageBuilder append14BitNumberBE(final int number) {
         if (number < 0 || number > 0x3fff) {
             throw new IllegalArgumentException("Expected a 14-bit number, got: " + number);
         }
         append((number >> 7) & 0x7f); // MSB
         append(number & 0x7f); // LSB
+        return this;
+    }    
+
+	/**
+	 * Append a 14-bit number as two 7-bit numbers in little endian byte order. The
+	 * least-significant-byte is appended before the most-significant-byte.
+	 * @param number A 14-bit number
+	 * @return Builder for chaining
+	 */
+	public MidiMessageBuilder append14BitNumberLE(final int number) {
+        if (number < 0 || number > 0x3fff) {
+            throw new IllegalArgumentException("Expected a 14-bit number, got: " + number);
+        }
+        append(number & 0x7f); // LSB
+        append((number >> 7) & 0x7f); // MSB
         return this;
     }    
 
@@ -76,7 +91,7 @@ public class MidiMessageBuilder {
 	public MidiMessage build() {
 		final byte[] data = bytes.toByteArray();
 		
-		// TODO Verify that the MIDI data is ok
+		// TODO Validate that the MIDI data is ok
 		
 		return new MidiMessage(data);
 	}

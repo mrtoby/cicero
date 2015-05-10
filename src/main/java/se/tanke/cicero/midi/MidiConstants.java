@@ -1,4 +1,4 @@
-package se.tanke.tcnova.midi;
+package se.tanke.cicero.midi;
 
 /**
  * Class with nice to have constants when dealing with MIDI messages.

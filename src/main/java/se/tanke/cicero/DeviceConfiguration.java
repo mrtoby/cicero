@@ -1,7 +1,7 @@
-package se.tanke.tcnova;
+package se.tanke.cicero;
 
 /**
- * Configuration for a specific TC Electronic Nova System device.
+ * Configuration for a specific device.
  */
 public class DeviceConfiguration {
 
