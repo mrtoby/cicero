@@ -102,7 +102,7 @@ public class NovaSystem implements DeviceType {
 			
 			final Patch patch = new Patch();
 			patch.setName(name);
-			patch.setMsg(msg);
+			patch.setMessage(msg);
 
 			if (number == 0) {
 				patch.setBank(CURRENT_PATCH_BANK);

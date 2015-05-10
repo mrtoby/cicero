@@ -11,7 +11,7 @@ public class Patch {
 	private String bank;
 	private int position;
 	private String name;
-	private MidiMessage msg;
+	private MidiMessage message;
 
 	public String getDeviceId() {
 		return deviceId;
@@ -45,24 +45,11 @@ public class Patch {
 		this.name = name;
 	}
 
-	public MidiMessage getMsg() {
-		return msg;
+	public MidiMessage getMessage() {
+		return message;
 	}
 
-	public void setMsg(final MidiMessage msg) {
-		this.msg = msg;
+	public void setMessage(final MidiMessage message) {
+		this.message = message;
 	}
-
-	@Override
-    public String toString() {
-    	final StringBuilder builder = new StringBuilder();
-    	builder.append("<patch ");
-    	builder.append(bank);
-    	builder.append("-");
-    	builder.append(Integer.toString(position));
-    	builder.append(" ");
-    	builder.append(name);
-    	builder.append(">");
-    	return builder.toString();
-    }
 }
