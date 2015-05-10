@@ -2,7 +2,7 @@
 <!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.3//EN" "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
 
 <!--
-    Checkstyle-Configuration: DSS Checks
+    Checkstyle-Configuration: Cicero Checstyle Checks
     Description: Modified version of the Sun Checks
 -->
 <module name="Checker">

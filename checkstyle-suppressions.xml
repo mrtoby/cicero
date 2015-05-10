@@ -9,7 +9,4 @@
 
     <!-- No checkstyle required for tests. -->
     <suppress files="[/\\]src[/\\]test[/\\]java[/\\].*\.java" checks="."/>
-    
-    <!-- No checkstyle for kinesis client library (currently in smart-garden-data-collection). -->
-    <suppress files="com[/\\]amazonaws[/\\]services[/\\]kinesis" checks="."/>
 </suppressions>
