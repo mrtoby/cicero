@@ -3,9 +3,9 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>se.tanke</groupId>
-	<artifactId>tanke-tcnova</artifactId>
+	<artifactId>tanke-cicero</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Tools for TC Electronics Nova System</name>
+	<name>Cicero Sysex Librarian</name>
 
 	<properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
