@@ -3,7 +3,7 @@ package se.tanke.cicero.midi;
 /**
  * Message used to indicate that the matching/reading process of a midi message has failed.
  */
-public class NotMatchingMessageException extends Exception {
+public class MidiMessageException extends Exception {
 
 	private static final long serialVersionUID = 2208727837945516771L;
 
@@ -11,7 +11,7 @@ public class NotMatchingMessageException extends Exception {
 	 * Create a new exception.
 	 * @param msg Message
 	 */
-	public NotMatchingMessageException(final String msg) {
+	public MidiMessageException(final String msg) {
 		super(msg);
 	}
 	
@@ -20,7 +20,7 @@ public class NotMatchingMessageException extends Exception {
 	 * @param msg Message
 	 * @param cause Root cause
 	 */
-	public NotMatchingMessageException(final String msg, final Throwable cause) {
+	public MidiMessageException(final String msg, final Throwable cause) {
 		super(msg, cause);
 	}	
 }

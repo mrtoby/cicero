@@ -48,7 +48,7 @@ public class MidiMessage {
 				&& (MidiConstants.SYSTEM_EXCLUSIVE == Byte.toUnsignedInt(data[0]))
 				&& (MidiConstants.SYSTEM_EXCLUSIVE_END == Byte.toUnsignedInt(data[data.length - 1]));
 	}
-	
+
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();

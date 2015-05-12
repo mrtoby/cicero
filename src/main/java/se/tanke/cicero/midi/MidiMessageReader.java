@@ -25,9 +25,9 @@ public class MidiMessageReader implements MidiMessageMatcher {
 	/**
 	 * Read a single byte.
 	 * @return The read byte
-	 * @throws NotMatchingMessageException If the the message is out of bytes 
+	 * @throws MidiMessageException If the the message is out of bytes 
 	 */
-	public int readByte() throws NotMatchingMessageException {
+	public int readByte() throws MidiMessageException {
 		assertBytesLeft(1);
 		return Byte.toUnsignedInt(data[position++]);
 	}
@@ -36,9 +36,9 @@ public class MidiMessageReader implements MidiMessageMatcher {
 	 * Read some bytes.
 	 * @param bytesToRead Number of byets to read
 	 * @return The read bytes
-	 * @throws NotMatchingMessageException If the the message is out of bytes 
+	 * @throws MidiMessageException If the the message is out of bytes 
 	 */
-	public int[] readBytes(final int bytesToRead) throws NotMatchingMessageException {
+	public int[] readBytes(final int bytesToRead) throws MidiMessageException {
 		assertBytesLeft(bytesToRead);
 		final int[] result = new int[bytesToRead];
 		for (int i = 0; i < bytesToRead; i++) {
@@ -51,12 +51,19 @@ public class MidiMessageReader implements MidiMessageMatcher {
 	 * Read a 14-bit number by combining two 7-bit numbers in big endian byte order. The
 	 * most-significant-byte is read first and then the least-significant-byte.
 	 * @return The read number
-	 * @throws NotMatchingMessageException If the the message is out of bytes 
+	 * @throws MidiMessageException If the the message is out of bytes 
 	 */
-	public int read14BitNumberBE() throws NotMatchingMessageException {
+	public int read14BitNumberBE() throws MidiMessageException {
 		assertBytesLeft(2);
-		int msb = Byte.toUnsignedInt(data[position++]);
-		int lsb = Byte.toUnsignedInt(data[position++]);
+		int msb = Byte.toUnsignedInt(data[position]);
+		int lsb = Byte.toUnsignedInt(data[position + 1]);
+		if (msb > 0x7f) {
+			throw new MidiMessageException("First byte is more than 7-bits");
+		}
+		if (lsb > 0x7f) {
+			throw new MidiMessageException("Second byte is more than 7-bits");
+		}
+		position += 2;
         return (msb << 7) | lsb;
     }
 
@@ -64,12 +71,19 @@ public class MidiMessageReader implements MidiMessageMatcher {
 	 * Read a 14-bit number by combining two 7-bit numbers in little endian byte order. The
 	 * least-significant-byte is read first and then the most-significant-byte.
 	 * @return The read number
-	 * @throws NotMatchingMessageException If the the message is out of bytes 
+	 * @throws MidiMessageException If the the message is out of bytes 
 	 */
-	public int read14BitNumberLE() throws NotMatchingMessageException {
+	public int read14BitNumberLE() throws MidiMessageException {
 		assertBytesLeft(2);
-		int lsb = Byte.toUnsignedInt(data[position++]);
-		int msb = Byte.toUnsignedInt(data[position++]);
+		int lsb = Byte.toUnsignedInt(data[position]);
+		int msb = Byte.toUnsignedInt(data[position + 1]);
+		if (lsb > 0x7f) {
+			throw new MidiMessageException("First byte is more than 7-bits");
+		}
+		if (msb > 0x7f) {
+			throw new MidiMessageException("Second byte is more than 7-bits");
+		}
+		position += 2;
         return (msb << 7) | lsb;
     }
 
@@ -77,91 +91,97 @@ public class MidiMessageReader implements MidiMessageMatcher {
 	 * Read a fixed length string.
 	 * @param numberOfChars Number of characters to read
 	 * @return A string of the expected length
-	 * @throws NotMatchingMessageException If the the message is out of bytes 
+	 * @throws MidiMessageException If the the message is out of bytes 
 	 */
-	public String readString(final int numberOfChars) throws NotMatchingMessageException {
+	public String readString(final int numberOfChars) throws MidiMessageException {
 		assertBytesLeft(numberOfChars);
 		final StringBuilder builder = new StringBuilder();
+		boolean collectingChars = true;
 		for (int i = 0; i < numberOfChars; i++) {
 			final int value = Byte.toUnsignedInt(data[position + i]);
-			if (value == 0) {
-				break;
+			if (value > 0x7f) {
+				throw new MidiMessageException("Character in position " + i + " use more than 7 bytes");
 			}
-			builder.append((char) value);
+			if (value == 0) {
+				collectingChars = false;
+			}
+			if (collectingChars) {
+				builder.append((char) value);
+			}
 		}
 		position += numberOfChars;
-		return builder.toString();
+		return builder.toString().trim();
 	}
 
 	@Override
-	public MidiMessageMatcher skipByte() throws NotMatchingMessageException {
+	public MidiMessageMatcher skipByte() throws MidiMessageException {
 		skipBytes(1);
 		return this;
 	}
 	
 	@Override
-	public MidiMessageMatcher skipBytes(final int bytesToSkip) throws NotMatchingMessageException {
+	public MidiMessageMatcher skipBytes(final int bytesToSkip) throws MidiMessageException {
 		assertBytesLeft(bytesToSkip);
 		position += bytesToSkip;
 		return this;
 	}
 
 	@Override
-	public MidiMessageMatcher matchByte(final int expectedByte) throws NotMatchingMessageException {
+	public MidiMessageMatcher matchByte(final int expectedByte) throws MidiMessageException {
 		assertBytesLeft(1);
 		final int readByte = Byte.toUnsignedInt(data[position++]);
 		if (readByte != expectedByte) {
-			throw new IllegalStateException("Expected byte " + expectedByte + " at " + (position - 1) + ", got: " + readByte);
+			throw new MidiMessageException("Expected byte " + expectedByte + " at " + (position - 1) + ", got: " + readByte);
 		}
 		return this;
 	}
 
 	@Override
-	public MidiMessageMatcher matchBytes(final int ... expectedBytes) throws NotMatchingMessageException {
+	public MidiMessageMatcher matchBytes(final int ... expectedBytes) throws MidiMessageException {
 		assertBytesLeft(expectedBytes.length);
 		for (int expectedByte : expectedBytes) {
 			final int readByte = Byte.toUnsignedInt(data[position++]);
 			if (readByte != expectedByte) {
-				throw new IllegalStateException("Expected byte " + expectedByte + " at " + (position - 1) + ", got: " + readByte);
+				throw new MidiMessageException("Expected byte " + expectedByte + " at " + (position - 1) + ", got: " + readByte);
 			}
 		}
 		return this;
 	}
 
 	@Override
-	public MidiMessageMatcher match14BitNumberBE(final int expectedNumber) throws NotMatchingMessageException {
+	public MidiMessageMatcher match14BitNumberBE(final int expectedNumber) throws MidiMessageException {
         if (expectedNumber < 0 || expectedNumber > 0x3fff) {
             throw new IllegalArgumentException("Expected a 14-bit BE number, got: " + expectedNumber);
         }
         final int readNumber = read14BitNumberBE();
         if (readNumber != expectedNumber) {
-			throw new IllegalStateException("Expected number " + expectedNumber + ", got: " + readNumber);
+			throw new MidiMessageException("Expected number " + expectedNumber + ", got: " + readNumber);
         }
         return this;
 	}
 	
 	@Override
-	public MidiMessageMatcher match14BitNumberLE(final int expectedNumber) throws NotMatchingMessageException {
+	public MidiMessageMatcher match14BitNumberLE(final int expectedNumber) throws MidiMessageException {
         if (expectedNumber < 0 || expectedNumber > 0x3fff) {
             throw new IllegalArgumentException("Expected a 14-bit LE number, got: " + expectedNumber);
         }
         final int readNumber = read14BitNumberLE();
         if (readNumber != expectedNumber) {
-			throw new IllegalStateException("Expected number " + expectedNumber + ", got: " + readNumber);
+			throw new MidiMessageException("Expected number " + expectedNumber + ", got: " + readNumber);
         }
         return this;
 	}
 	
 	@Override
-	public void done() throws NotMatchingMessageException {
+	public void done() throws MidiMessageException {
 		if (position < data.length) {
-			throw new IllegalStateException("Expected end of message after reading " + position + " bytes");
+			throw new MidiMessageException("Expected end of message after reading " + position + " bytes");
 		}
 	}
 	
-	private void assertBytesLeft(final int expectedBytesLeft) {
+	private void assertBytesLeft(final int expectedBytesLeft) throws MidiMessageException {
 		if (position + expectedBytesLeft > data.length) {
-			throw new IllegalStateException("Unexpected end of message after reading " + position + " bytes");
+			throw new MidiMessageException("Unexpected end of message after reading " + position + " bytes");
 		}
 	}
 }

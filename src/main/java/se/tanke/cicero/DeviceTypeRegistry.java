@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import se.tanke.cicero.midi.MidiMessage;
+
 /**
  * Registry of device types.
  */
@@ -32,18 +34,19 @@ public class DeviceTypeRegistry {
 	 * @return The device type, if present
 	 */
 	public Optional<DeviceType> getById(final String deviceTypeId) {
-		return Optional.ofNullable(deviceTypeById.get(deviceTypeById));
+		return Optional.ofNullable(deviceTypeById.get(deviceTypeId));
 	}
 
 	/**
-	 * Find device types that can handle a specific sysex manufacturer id.
-	 * @param manufacturerBytes Sysex manufacturer id bytes
-	 * @return Device types that can handle the manufacturer
+	 * Find device types that can handle a specific patch sysex message.
+	 * @param msg The message to find a device type based on
+	 * @return Device types that can convert the message into a patch
 	 */
-	public List<DeviceType> findByManufacturer(final int[] manufacturerBytes) {
+	public List<DeviceType> findByPatchMessage(final MidiMessage msg) {
 		final List<DeviceType> result = new ArrayList<>();
 		for (DeviceType deviceType : deviceTypes) {
-			if (deviceType.isManufacturerApplicable(manufacturerBytes)) {
+			final Optional<Patch> patch = deviceType.decodePatch(msg);
+			if (patch.isPresent()) {
 				result.add(deviceType);
 			}
 		}

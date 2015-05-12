@@ -1,23 +1,22 @@
 package se.tanke.cicero.tc;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import se.tanke.cicero.DeviceType;
 import se.tanke.cicero.DeviceConfiguration;
+import se.tanke.cicero.DeviceType;
 import se.tanke.cicero.Patch;
 import se.tanke.cicero.midi.ManufacturerIdConstants;
 import se.tanke.cicero.midi.MidiConstants;
 import se.tanke.cicero.midi.MidiMessage;
 import se.tanke.cicero.midi.MidiMessageReader;
-import se.tanke.cicero.midi.NotMatchingMessageException;
+import se.tanke.cicero.midi.MidiMessageException;
 
 /**
  * This is a class representing TC Electronics Nova System.
  */
-public class NovaSystem implements DeviceType {
+public class TCNovaSystem implements DeviceType {
 
 	private static final String DEVICE_NAME = "TC Electronics Nova System";
 	private static final String DEVICE_ID = "tc-nova";
@@ -73,12 +72,7 @@ public class NovaSystem implements DeviceType {
 	}
 
 	@Override
-	public boolean isManufacturerApplicable(final int[] manufacturerBytes) {
-		return Arrays.equals(manufacturerBytes, ManufacturerIdConstants.TC_ELECTRONICS);
-	}
-
-	@Override
-	public Optional<Patch> decodePatch(final DeviceConfiguration config, final MidiMessage msg) {
+	public Optional<Patch> decodePatch(final MidiMessage msg) {
 		final MidiMessageReader reader = msg.reader();
 		
 		try {
@@ -112,7 +106,7 @@ public class NovaSystem implements DeviceType {
 				patch.setPosition(1 + ((number - 1) % 3));
 			}
 			return Optional.of(patch);
-		} catch (NotMatchingMessageException e) {
+		} catch (MidiMessageException e) {
 			// TODO Logging
 			return Optional.empty();
 		}
@@ -163,7 +157,7 @@ public class NovaSystem implements DeviceType {
     				.skipBytes(517) // Total size is 526 bytes
 	    			.matchByte(MidiConstants.SYSTEM_EXCLUSIVE_END)
     				.done();
-    	} catch (NotMatchingMessageException e) {
+    	} catch (MidiMessageException e) {
     		return false;
     	}
     	return true;

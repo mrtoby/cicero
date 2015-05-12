@@ -52,4 +52,18 @@ public class Patch {
 	public void setMessage(final MidiMessage message) {
 		this.message = message;
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder buf = new StringBuilder();
+		buf.append("<patch ");
+		buf.append(bank);
+		buf.append("-");
+		buf.append(Integer.toString(position));
+		buf.append(" ");
+		buf.append(name);
+		buf.append(">");
+		
+		return buf.toString();
+	}
 }

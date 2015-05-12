@@ -25,7 +25,7 @@ public class MidiMessageBuilderTest {
 	}
 	
 	@Test
-	public void append14BitNumber_works_with_max_value() {
+	public void append14BitNumberBE_works_with_max_value() {
 		final MidiMessage result = MidiMessage.newBuilder()
 				.append(MidiConstants.SYSTEM_EXCLUSIVE)
 				.append14BitNumberBE(0x3fff)
@@ -40,7 +40,7 @@ public class MidiMessageBuilderTest {
 	}
 
 	@Test
-	public void append14BitNumber_works_with_zero_value() {
+	public void append14BitNumberBE_works_with_zero_value() {
 		final MidiMessage result = MidiMessage.newBuilder()
 				.append(MidiConstants.SYSTEM_EXCLUSIVE)
 				.append14BitNumberBE(0x0000)
@@ -55,7 +55,7 @@ public class MidiMessageBuilderTest {
 	}
 
 	@Test
-	public void append14BitNumber_works_with_some_value() {
+	public void append14BitNumberBE_works_with_some_value() {
 		final MidiMessage result = MidiMessage.newBuilder()
 				.append(MidiConstants.SYSTEM_EXCLUSIVE)
 				.append14BitNumberBE(0x1234)
@@ -67,5 +67,78 @@ public class MidiMessageBuilderTest {
 		assertEquals(0x24, Byte.toUnsignedInt(data[1]));
 		assertEquals(0x34, Byte.toUnsignedInt(data[2]));
 		assertEquals(MidiConstants.SYSTEM_EXCLUSIVE_END, Byte.toUnsignedInt(data[3]));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void append14BitNumberBE_fails_for_negative_number() {
+		MidiMessage.newBuilder()
+				.append(MidiConstants.SYSTEM_EXCLUSIVE)
+				.append14BitNumberBE(-1);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void append14BitNumberBE_fails_for_too_large_number() {
+		MidiMessage.newBuilder()
+				.append(MidiConstants.SYSTEM_EXCLUSIVE)
+				.append14BitNumberBE(0x4000);
+	}
+	
+	@Test
+	public void append14BitNumberLE_works_with_max_value() {
+		final MidiMessage result = MidiMessage.newBuilder()
+				.append(MidiConstants.SYSTEM_EXCLUSIVE)
+				.append14BitNumberLE(0x3fff)
+				.append(MidiConstants.SYSTEM_EXCLUSIVE_END)
+				.build();
+		
+		final byte[] data = result.getData();
+		assertEquals(MidiConstants.SYSTEM_EXCLUSIVE, Byte.toUnsignedInt(data[0]));
+		assertEquals(0x7f, Byte.toUnsignedInt(data[1]));
+		assertEquals(0x7f, Byte.toUnsignedInt(data[2]));
+		assertEquals(MidiConstants.SYSTEM_EXCLUSIVE_END, Byte.toUnsignedInt(data[3]));
+	}
+
+	@Test
+	public void append14BitNumberLE_works_with_zero_value() {
+		final MidiMessage result = MidiMessage.newBuilder()
+				.append(MidiConstants.SYSTEM_EXCLUSIVE)
+				.append14BitNumberLE(0x0000)
+				.append(MidiConstants.SYSTEM_EXCLUSIVE_END)
+				.build();
+		
+		final byte[] data = result.getData();
+		assertEquals(MidiConstants.SYSTEM_EXCLUSIVE, Byte.toUnsignedInt(data[0]));
+		assertEquals(0x00, Byte.toUnsignedInt(data[1]));
+		assertEquals(0x00, Byte.toUnsignedInt(data[2]));
+		assertEquals(MidiConstants.SYSTEM_EXCLUSIVE_END, Byte.toUnsignedInt(data[3]));
+	}
+
+	@Test
+	public void append14BitNumberLE_works_with_some_value() {
+		final MidiMessage result = MidiMessage.newBuilder()
+				.append(MidiConstants.SYSTEM_EXCLUSIVE)
+				.append14BitNumberLE(0x1234)
+				.append(MidiConstants.SYSTEM_EXCLUSIVE_END)
+				.build();
+		
+		final byte[] data = result.getData();
+		assertEquals(MidiConstants.SYSTEM_EXCLUSIVE, Byte.toUnsignedInt(data[0]));
+		assertEquals(0x34, Byte.toUnsignedInt(data[1]));
+		assertEquals(0x24, Byte.toUnsignedInt(data[2]));
+		assertEquals(MidiConstants.SYSTEM_EXCLUSIVE_END, Byte.toUnsignedInt(data[3]));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void append14BitNumberLE_fails_for_negative_number() {
+		MidiMessage.newBuilder()
+				.append(MidiConstants.SYSTEM_EXCLUSIVE)
+				.append14BitNumberLE(-1);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void append14BitNumberLE_fails_for_too_large_number() {
+		MidiMessage.newBuilder()
+				.append(MidiConstants.SYSTEM_EXCLUSIVE)
+				.append14BitNumberLE(0x4000);
 	}
 }
