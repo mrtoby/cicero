@@ -2,9 +2,10 @@ package se.tanke.cicero;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+
+import org.apache.log4j.Logger;
 
 import se.tanke.cicero.midi.MidiMessage;
 import se.tanke.cicero.midi.SysexFile;
@@ -20,6 +21,8 @@ import se.tanke.cicero.tc.TCNovaSystem;
  */
 public class Cicero {
 
+	private static final Logger LOG = Logger.getLogger(Cicero.class);
+	
 	public static void main(final String[] args) throws IOException {
 		final DeviceTypeRegistry registry = new DeviceTypeRegistry();
 		registry.register(new TCNovaSystem());
@@ -34,13 +37,13 @@ public class Cicero {
 			
 			for (MidiMessage msg : messages) {
 				final Optional<Patch> patch = type.decodePatch(msg);
-				System.out.println(patch.toString());
+				System.out.println(patch.get().toString());
 			}
 		}
 	}
 
-	private static DeviceType getDeviceTypeFor(final DeviceTypeRegistry registry, final MidiMessage firstMessage) {
-		final List<DeviceType> deviceTypes = registry.findByPatchMessage(firstMessage);
+	private static DeviceType getDeviceTypeFor(final DeviceTypeRegistry registry, final MidiMessage msg) {
+		final List<DeviceType> deviceTypes = registry.findByPatchMessage(msg);
 		if (deviceTypes.size() == 0) {
 			throw new RuntimeException("No device type recognize the first message");
 		}

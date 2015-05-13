@@ -58,10 +58,10 @@ public class MidiMessageReader implements MidiMessageMatcher {
 		int msb = Byte.toUnsignedInt(data[position]);
 		int lsb = Byte.toUnsignedInt(data[position + 1]);
 		if (msb > 0x7f) {
-			throw new MidiMessageException("First byte is more than 7-bits");
+			throw new MidiMessageException(position, "Number byte is more than 7-bits");
 		}
 		if (lsb > 0x7f) {
-			throw new MidiMessageException("Second byte is more than 7-bits");
+			throw new MidiMessageException(position + 1, "Number byte is more than 7-bits");
 		}
 		position += 2;
         return (msb << 7) | lsb;
@@ -78,10 +78,10 @@ public class MidiMessageReader implements MidiMessageMatcher {
 		int lsb = Byte.toUnsignedInt(data[position]);
 		int msb = Byte.toUnsignedInt(data[position + 1]);
 		if (lsb > 0x7f) {
-			throw new MidiMessageException("First byte is more than 7-bits");
+			throw new MidiMessageException(position, "Number byte is more than 7-bits");
 		}
 		if (msb > 0x7f) {
-			throw new MidiMessageException("Second byte is more than 7-bits");
+			throw new MidiMessageException(position + 1, "Number byte is more than 7-bits");
 		}
 		position += 2;
         return (msb << 7) | lsb;
@@ -100,7 +100,7 @@ public class MidiMessageReader implements MidiMessageMatcher {
 		for (int i = 0; i < numberOfChars; i++) {
 			final int value = Byte.toUnsignedInt(data[position + i]);
 			if (value > 0x7f) {
-				throw new MidiMessageException("Character in position " + i + " use more than 7 bytes");
+				throw new MidiMessageException(position + i, "Character use more than 7 bytes");
 			}
 			if (value == 0) {
 				collectingChars = false;
@@ -131,7 +131,7 @@ public class MidiMessageReader implements MidiMessageMatcher {
 		assertBytesLeft(1);
 		final int readByte = Byte.toUnsignedInt(data[position++]);
 		if (readByte != expectedByte) {
-			throw new MidiMessageException("Expected byte " + expectedByte + " at " + (position - 1) + ", got: " + readByte);
+			throw new MidiMessageException(position - 1, "Expected byte " + expectedByte + ", got: " + readByte);
 		}
 		return this;
 	}
@@ -142,7 +142,7 @@ public class MidiMessageReader implements MidiMessageMatcher {
 		for (int expectedByte : expectedBytes) {
 			final int readByte = Byte.toUnsignedInt(data[position++]);
 			if (readByte != expectedByte) {
-				throw new MidiMessageException("Expected byte " + expectedByte + " at " + (position - 1) + ", got: " + readByte);
+				throw new MidiMessageException(position - 1, "Expected byte " + expectedByte + ", got: " + readByte);
 			}
 		}
 		return this;
@@ -151,11 +151,11 @@ public class MidiMessageReader implements MidiMessageMatcher {
 	@Override
 	public MidiMessageMatcher match14BitNumberBE(final int expectedNumber) throws MidiMessageException {
         if (expectedNumber < 0 || expectedNumber > 0x3fff) {
-            throw new IllegalArgumentException("Expected a 14-bit BE number, got: " + expectedNumber);
+            throw new IllegalArgumentException("Argument should be a 14-bit BE number, got: " + expectedNumber);
         }
         final int readNumber = read14BitNumberBE();
         if (readNumber != expectedNumber) {
-			throw new MidiMessageException("Expected number " + expectedNumber + ", got: " + readNumber);
+			throw new MidiMessageException(position - 2, "Expected number " + expectedNumber + ", got: " + readNumber);
         }
         return this;
 	}
@@ -163,11 +163,11 @@ public class MidiMessageReader implements MidiMessageMatcher {
 	@Override
 	public MidiMessageMatcher match14BitNumberLE(final int expectedNumber) throws MidiMessageException {
         if (expectedNumber < 0 || expectedNumber > 0x3fff) {
-            throw new IllegalArgumentException("Expected a 14-bit LE number, got: " + expectedNumber);
+            throw new IllegalArgumentException("Argument should be a 14-bit LE number, got: " + expectedNumber);
         }
         final int readNumber = read14BitNumberLE();
         if (readNumber != expectedNumber) {
-			throw new MidiMessageException("Expected number " + expectedNumber + ", got: " + readNumber);
+			throw new MidiMessageException(position - 2, "Expected number " + expectedNumber + ", got: " + readNumber);
         }
         return this;
 	}
@@ -175,13 +175,13 @@ public class MidiMessageReader implements MidiMessageMatcher {
 	@Override
 	public void done() throws MidiMessageException {
 		if (position < data.length) {
-			throw new MidiMessageException("Expected end of message after reading " + position + " bytes");
+			throw new MidiMessageException(position, "Expected end of message");
 		}
 	}
 	
 	private void assertBytesLeft(final int expectedBytesLeft) throws MidiMessageException {
 		if (position + expectedBytesLeft > data.length) {
-			throw new MidiMessageException("Unexpected end of message after reading " + position + " bytes");
+			throw new MidiMessageException(position, "Unexpected end of message, expected " + expectedBytesLeft + " bytes more");
 		}
 	}
 }

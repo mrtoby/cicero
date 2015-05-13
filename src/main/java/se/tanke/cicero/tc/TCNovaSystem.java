@@ -4,14 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.log4j.Logger;
+
 import se.tanke.cicero.DeviceConfiguration;
 import se.tanke.cicero.DeviceType;
 import se.tanke.cicero.Patch;
 import se.tanke.cicero.midi.ManufacturerIdConstants;
 import se.tanke.cicero.midi.MidiConstants;
 import se.tanke.cicero.midi.MidiMessage;
-import se.tanke.cicero.midi.MidiMessageReader;
 import se.tanke.cicero.midi.MidiMessageException;
+import se.tanke.cicero.midi.MidiMessageReader;
 
 /**
  * This is a class representing TC Electronics Nova System.
@@ -31,6 +33,8 @@ public class TCNovaSystem implements DeviceType {
     private static final int PRESET_TYPE_PRESET_PARAMETERS_BYTE = 0x01;
     private static final int PRESET_TYPE_SYSTEM_PARAMETERS_BYTE = 0x02;
 	private static final int DEFAULT_SYSEX_ID = 0;
+	
+	private static final Logger LOG = Logger.getLogger(TCNovaSystem.class);
 	
 	@Override
 	public String getName() {
@@ -82,7 +86,7 @@ public class TCNovaSystem implements DeviceType {
 					.skipByte() // The sysex id
 					.matchByte(MODEL_ID_BYTE)
 					.matchByte(0x20) // Patch data?
-					.matchByte(0x01);
+					.matchByte(PRESET_TYPE_PRESET_PARAMETERS_BYTE);
 			final int number = reader.read14BitNumberLE();
 			final String name = reader.readString(21);
 			reader.skipBytes(488) // The rest of the data
@@ -107,15 +111,14 @@ public class TCNovaSystem implements DeviceType {
 			}
 			return Optional.of(patch);
 		} catch (MidiMessageException e) {
-			// TODO Logging
+			LOG.debug("Failed to decode message", e);
 			return Optional.empty();
 		}
 	}
 
 	@Override
 	public Optional<MidiMessage> encodePatch(final DeviceConfiguration config, final Patch patch) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Not implemented");
 	}
 
 	private static boolean isVariationPatch(final int number) {
@@ -153,11 +156,12 @@ public class TCNovaSystem implements DeviceType {
     				.skipByte() // The sysex id
     				.matchByte(MODEL_ID_BYTE)
     				.matchByte(0x20) // Patch data?
-    				.matchByte(0x02) // Type of data?
+    				.matchByte(PRESET_TYPE_SYSTEM_PARAMETERS_BYTE) // Type of data?
     				.skipBytes(517) // Total size is 526 bytes
 	    			.matchByte(MidiConstants.SYSTEM_EXCLUSIVE_END)
     				.done();
     	} catch (MidiMessageException e) {
+    		LOG.debug("Not a system params sysex", e);
     		return false;
     	}
     	return true;

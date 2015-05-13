@@ -64,8 +64,9 @@ public class MidiMessageBuilder {
         if (number < 0 || number > 0x3fff) {
             throw new IllegalArgumentException("Expected a 14-bit number, got: " + number);
         }
-        append((number >> 7) & 0x7f); // MSB
-        append(number & 0x7f); // LSB
+        final int msb = (number >> 7) & 0x7f;
+        final int lsb = number & 0x7f;
+        append(msb, lsb);
         return this;
     }    
 
@@ -79,8 +80,9 @@ public class MidiMessageBuilder {
         if (number < 0 || number > 0x3fff) {
             throw new IllegalArgumentException("Expected a 14-bit number, got: " + number);
         }
-        append(number & 0x7f); // LSB
-        append((number >> 7) & 0x7f); // MSB
+        final int lsb = number & 0x7f;
+        final int msb = (number >> 7) & 0x7f;
+        append(lsb, msb);
         return this;
     }    
 

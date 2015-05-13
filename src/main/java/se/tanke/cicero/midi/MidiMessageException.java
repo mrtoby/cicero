@@ -9,18 +9,20 @@ public class MidiMessageException extends Exception {
 
 	/**
 	 * Create a new exception.
+	 * @param position Position in message
 	 * @param msg Message
 	 */
-	public MidiMessageException(final String msg) {
-		super(msg);
+	public MidiMessageException(final int position, final String msg) {
+		super("@" + position + ", " + msg);
 	}
 	
 	/**
 	 * Create a new exception.
+	 * @param position Position in message
 	 * @param msg Message
 	 * @param cause Root cause
 	 */
-	public MidiMessageException(final String msg, final Throwable cause) {
-		super(msg, cause);
+	public MidiMessageException(final int position, final String msg, final Throwable cause) {
+		super("@" + position + ", " + msg, cause);
 	}	
 }

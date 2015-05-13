@@ -60,9 +60,9 @@ public class Patch {
 		buf.append(bank);
 		buf.append("-");
 		buf.append(Integer.toString(position));
-		buf.append(" ");
+		buf.append(" \"");
 		buf.append(name);
-		buf.append(">");
+		buf.append("\">");
 		
 		return buf.toString();
 	}
